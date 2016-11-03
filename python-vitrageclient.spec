@@ -5,6 +5,10 @@
 %global with_python3 0
 %endif
 
+%if 0%{?fedora}==0
+%global __python2 /usr/bin/python
+%endif
+
 
 %{!?upstream_version: %global upstream_version %{version}%{?milestone}}
 
@@ -78,8 +82,7 @@ for Vitrage API and Command Line Interface (CLI) library.
 
 %prep
 %autosetup -n %{name}-%{upstream_version}
-# Remove bundled egg-info
-rm -rf %{pypi_name}.egg-info
+
 # Let RPM handle the dependencies
 rm -f test-requirements.txt requirements.txt
 
