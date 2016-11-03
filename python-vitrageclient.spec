@@ -1,4 +1,10 @@
 %global pypi_name vitrageclient
+%if 0%{?fedora}
+%global with_python3 1
+%else
+%global with_python3 0
+%endif
+
 
 %{!?upstream_version: %global upstream_version %{version}%{?milestone}}
 
@@ -37,7 +43,7 @@ Summary:        Python client for Vitrage REST API
 Python client for Vitrage REST API. Includes python library for Vitrage API
 and Command Line Interface (CLI) library.
 
-
+%if 0%{?with_python3}
 # Python3 package
 %package -n     python3-%{pypi_name}
 Summary:        Python client for Vitrage REST API
@@ -56,7 +62,7 @@ Requires:       python3-oslo-utils >= 3.16.0
 %description -n python3-%{pypi_name}
 Python client for Vitrage REST API. Includes python library for Vitrage API
 and Command Line Interface (CLI) library.
-
+%endif
 
 # Documentation package
 %package -n python-%{pypi_name}-doc
@@ -80,9 +86,11 @@ rm -f test-requirements.txt requirements.txt
 
 %build
 %py2_build
+%if 0%{?with_python3}
 %py3_build
+%endif
 
-# generate html docs 
+# generate html docs
 sphinx-build doc/source html
 # remove the sphinx-build leftovers
 rm -rf html/.{doctrees,buildinfo}
@@ -90,24 +98,28 @@ rm -rf html/.{doctrees,buildinfo}
 
 %install
 %py2_install
+%if 0%{?with_python3}
 %py3_install
+%endif
 
 
 %files -n python2-%{pypi_name}
 %license LICENSE
 %doc README.rst
 %{python2_sitelib}/%{pypi_name}
-%{python2_sitelib}/python_%{pypi_name}-*-py?.?.egg-info 
+%{python2_sitelib}/python_%{pypi_name}-*-py?.?.egg-info
 %{_bindir}/vitrage*
 /usr/share/vitrage*
 
+%if 0%{?with_python3}
 # Files for python3
-%files -n python3-%{pypi_name} 
+%files -n python3-%{pypi_name}
 %license LICENSE
 %doc README.rst
 %{_bindir}/vitrage*
 %{python3_sitelib}/%{pypi_name}
 %{python3_sitelib}/python_%{pypi_name}-%{version}-py?.?.egg-info
+%endif
 
 %files -n python-%{pypi_name}-doc
 %doc html
@@ -115,6 +127,9 @@ rm -rf html/.{doctrees,buildinfo}
 
 
 %changelog
+* Thu Nov 03 2016 Matthias Runge <mrunge@redhat.com> - 1.0.1-1
+- minor spec fixes, py3 conditional, source0 URL
+
 * Tue Sep 27 2016 Marcos Fermin Lobo <lobo@lukos.org> 1.0.1
 - First RPM
 
