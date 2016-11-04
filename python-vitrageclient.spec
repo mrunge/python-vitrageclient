@@ -14,8 +14,8 @@
 
 Name:           python-%{pypi_name}
 Version:        1.0.1
-Release:        2%{?dist}
-Summary:        Python client for Virage REST API
+Release:        3%{?dist}
+Summary:        Python client for Vitrage REST API
 
 License:        ASL 2.0
 URL:            http://pypi.python.org/pypi/%{name}
@@ -30,15 +30,15 @@ and Command Line Interface (CLI) library.
 
 %package -n     python2-%{pypi_name}
 
-BuildRequires:  python2-devel
+BuildRequires:  python-devel
 BuildRequires:  python-setuptools
 BuildRequires:  python-pbr
 
-Requires:       python2-babel >= 2.3.4
-Requires:       python2-cliff >= 1.15.0
-Requires:       python2-keystoneauth1 >= 2.10.0
+Requires:       python-babel >= 2.3.4
+Requires:       python-cliff >= 1.15.0
+Requires:       python-keystoneauth1 >= 2.10.0
 Requires:       python-pbr
-Requires:       python2-oslo-utils >= 3.16.0
+Requires:       python-oslo-utils >= 3.16.0
 
 Requires:       %{name}-bash-completion = %{version}-%{release}
 
@@ -130,15 +130,15 @@ mv %{buildroot}%{_datadir}/vitrage.bash_completion %{buildroot}$bashcompdir/vitr
 %doc README.rst
 %{python2_sitelib}/%{pypi_name}
 %{python2_sitelib}/python_%{pypi_name}-*-py?.?.egg-info
-%{_bindir}/vitrage*
-#%{_datadir}/vitrage*
+%{_bindir}/vitrage
 
 %if 0%{?with_python3}
 # Files for python3
 %files -n python3-%{pypi_name}
 %license LICENSE
 %doc README.rst
-%{_bindir}/vitrage*
+%{_bindir}/vitrage-3
+%{_bindir}/vitrage-%{python3_version}
 %{python3_sitelib}/%{pypi_name}
 %{python3_sitelib}/python_%{pypi_name}-%{version}-py?.?.egg-info
 %endif
@@ -148,9 +148,13 @@ mv %{buildroot}%{_datadir}/vitrage.bash_completion %{buildroot}$bashcompdir/vitr
 %license LICENSE
 
 %files bash-completion
+%license LICENSE
 %{_datadir}/bash-completion/completions/vitrage
 
 %changelog
+* Fri Nov 04 2016 Matthias Runge <mrunge@redhat.com> - 1.0.1-3
+- address review comments (rhbz#1391892)
+
 * Fri Nov 04 2016 Matthias Runge <mrunge@redhat.com> - 1.0.1-2
 - fix python3 binary handling and requires
 - fix bash-completion handling
