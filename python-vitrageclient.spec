@@ -14,7 +14,7 @@
 
 Name:           python-%{pypi_name}
 Version:        1.0.1
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Python client for Virage REST API
 
 License:        ASL 2.0
@@ -39,6 +39,8 @@ Requires:       python2-cliff >= 1.15.0
 Requires:       python2-keystoneauth1 >= 2.10.0
 Requires:       python-pbr
 Requires:       python2-oslo-utils >= 3.16.0
+
+Requires:       %{name}-bash-completion = %{version}-%{release}
 
 Summary:        Python client for Vitrage REST API
 %{?python_provide:%python_provide python2-%{pypi_name}}
@@ -79,6 +81,13 @@ BuildRequires: python2-oslo-sphinx >= 2.3.0
 Documentation for python client for Vitrage REST API. Includes python library
 for Vitrage API and Command Line Interface (CLI) library.
 
+%package bash-completion
+Summary:        bash completion files for vitrage
+BuildRequires:  bash-completion
+
+%description bash-completion
+This package contains bash completion files for vitrage.
+
 
 %prep
 %autosetup -n %{name}-%{upstream_version}
@@ -100,11 +109,21 @@ rm -rf html/.{doctrees,buildinfo}
 
 
 %install
-%py2_install
 %if 0%{?with_python3}
 %py3_install
+# rename python3 binary:
+pushd %{buildroot}/%{_bindir}
+mv vitrage vitrage-3
+ln -s vitrage-3 vitrage-%{python3_version}
+popd
 %endif
 
+%py2_install
+
+# push autocompletion
+bashcompdir=$(pkg-config --variable=completionsdir bash-completion)
+mkdir -p %{buildroot}$bashcompdir
+mv %{buildroot}%{_datadir}/vitrage.bash_completion %{buildroot}$bashcompdir/vitrage
 
 %files -n python2-%{pypi_name}
 %license LICENSE
@@ -112,7 +131,7 @@ rm -rf html/.{doctrees,buildinfo}
 %{python2_sitelib}/%{pypi_name}
 %{python2_sitelib}/python_%{pypi_name}-*-py?.?.egg-info
 %{_bindir}/vitrage*
-/usr/share/vitrage*
+#%{_datadir}/vitrage*
 
 %if 0%{?with_python3}
 # Files for python3
@@ -128,8 +147,14 @@ rm -rf html/.{doctrees,buildinfo}
 %doc html
 %license LICENSE
 
+%files bash-completion
+%{_datadir}/bash-completion/completions/vitrage
 
 %changelog
+* Fri Nov 04 2016 Matthias Runge <mrunge@redhat.com> - 1.0.1-2
+- fix python3 binary handling and requires
+- fix bash-completion handling
+
 * Thu Nov 03 2016 Matthias Runge <mrunge@redhat.com> - 1.0.1-1
 - minor spec fixes, py3 conditional, source0 URL
 
